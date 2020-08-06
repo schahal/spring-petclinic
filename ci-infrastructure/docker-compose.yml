@@ -1,0 +1,23 @@
+registry:
+  restart: always
+  image: registry:2
+  ports:
+    - "5000:5000"
+  volumes:
+    - "./container-data/registry:/var/lib/registry"
+
+jenkins:
+  build: .
+  restart: always
+  ports:
+    - "8080:8080"
+    - "50000:50000"
+  environment:
+    - "JAVA_OPTS=\"-Djava.util.logging.config.file=/usr/share/jenkins/ref/log.properties\""
+    - CASC_JENKINS_CONFIG=/usr/share/jenkins/ref/config.yml
+    - GITHUB_USER=${GITHUB_PASS}
+    - GITHUB_PASS=${GITHUB_PASS}
+    - LINUX_AGENT_SSH_USER=${LINUX_AGENT_SSH_USER}
+    - LINUX_AGENT_SSH_PASS=${LINUX_AGENT_SSH_PASS}
+  volumes:
+    - "./container-data/jenkins:/var/jenkins_home"

@@ -6,6 +6,7 @@ target/*
 .attach_pid*
 .idea
 *.iml
+/ci-infrastructure/container-data
 /target
 .sts4-cache/
 .vscode/*

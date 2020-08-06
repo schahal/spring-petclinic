@@ -1,0 +1,49 @@
+jenkins:
+  systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin\n\n"
+  
+  nodes:
+    - permanent:
+        name: "linux-agent-with-docker"
+        labelString: "linux-agent-with-docker"
+        mode: NORMAL 
+        numExecutors: 1
+        remoteFS: "/home/ubuntu/jenkins"
+        launcher:
+          ssh:
+            credentialsId: "linux-agent-user"
+            host: "10.20.41.193"
+            port: 22
+            sshHostKeyVerificationStrategy:
+              manuallyTrustedKeyVerificationStrategy:
+                requireInitialManualTrust: false
+
+  slaveAgentPort: 50000
+  agentProtocols:
+    - "jnlp2"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+        - usernamePassword:
+            scope:    GLOBAL 
+            id:       github-user
+            username: schahal 
+            password: ${GITHUB_PW}
+        - usernamePassword:
+            scope:    GLOBAL 
+            id:       linux-agent-user
+            username: ${LINUX_AGENT_SSH_USER} 
+            password: ${LINUX_AGENT_SSH_PASS}
+
+jobs:
+  - script: >
+      multibranchPipelineJob('spring-petclinic') {
+        branchSources {
+          git {
+            id = 'spring-petclinic'
+            remote('https://github.com/schahal/spring-petclinic.git')
+            credentialsId('github-user')
+          }
+        }
+      }
